@@ -1,1 +1,1 @@
-Developing my First Web Application using standard Java technologies.
+Hands-on Standard Java technologies (Servlets, JSP...)
