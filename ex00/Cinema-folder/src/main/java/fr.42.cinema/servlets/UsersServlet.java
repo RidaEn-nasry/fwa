@@ -22,8 +22,7 @@ public class UsersServlet extends HttpServlet {
         ServletContext context = config.getServletContext();
         ApplicationContext springContext = (ApplicationContext) context.getAttribute("springContext");
         usersService = springContext.getBean(UsersService.class);
+        assert usersService != null;
     }
-
-    
 
 }
