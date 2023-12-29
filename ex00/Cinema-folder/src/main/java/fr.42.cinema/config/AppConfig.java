@@ -2,6 +2,11 @@ package fr.fortytwo.cinema.config;
 
 import javax.sql.DataSource;
 import javax.xml.crypto.Data;
+
+// using jakrarta insteead
+// import jakarta.sql.DataSource;
+// import jakarta.xml.crypto.Data;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -17,7 +22,7 @@ import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
 @ComponentScan("fr.fortytwo.cinema")
-@PropertySource("classpath:application.properties")
+@PropertySource("file:${webapp.root}/WEB-INF/application.properties")
 public class AppConfig {
 
     @Value("db.url")
