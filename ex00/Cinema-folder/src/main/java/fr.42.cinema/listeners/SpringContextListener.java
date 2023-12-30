@@ -9,11 +9,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 // import javax.servlet.annotation.WebListener;
 import jakarta.servlet.ServletContextEvent;
-
-// import org.springframework.web.context.ContextLoaderListener;
-
 import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.annotation.WebListener;
 
+@WebListener("springContextListener")
 public class SpringContextListener implements ServletContextListener {
 
     @Override
@@ -25,9 +24,9 @@ public class SpringContextListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        // AnnotationConfigApplicationContext springContext =
-        // (AnnotationConfigApplicationContext) sce.getServletContext()
-        // .getAttribute("springContext");
-        // springContext.close();
+        AnnotationConfigApplicationContext springContext = (AnnotationConfigApplicationContext) sce.getServletContext()
+                .getAttribute("springContext");
+        if (springContext != null)
+            springContext.close();
     }
 }

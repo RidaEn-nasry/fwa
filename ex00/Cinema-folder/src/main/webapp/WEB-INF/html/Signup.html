@@ -4,11 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Signin </title>
+    <title> Signup </title>
 </head>
 <h1>Signin</h1>
 <!-- http://localhost:8080/Cinema-folder/src/main/webapp/WEB-INF/html/Signin.html -->
-<form action="users/signIn" method="post">
+<form action="users/signUp" method="post">
+    <label for="username">first name:</label><br>
+    <input type="text" id="first_name" name="first_name" value=""><br>
+    <label for="username">last name:</label><br>
+    <input type="text" id="last_name" name="last_name" value=""><br>
     <label for="phone">phone:</label><br>
     <input type="text" id="phone" name="phone" value=""><br>
     <label for="password">Password:</label><br>
