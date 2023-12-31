@@ -1,13 +1,10 @@
 
 package fr.fortytwo.cinema.listeners;
 
-// import javax.servlet.annotation.WebListener;
-// import org.springframework.context.annotation.Configuration;
 import fr.fortytwo.cinema.config.AppConfig;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-// import javax.servlet.annotation.WebListener;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;

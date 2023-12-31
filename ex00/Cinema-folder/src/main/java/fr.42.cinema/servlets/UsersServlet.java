@@ -1,6 +1,7 @@
 
 package fr.fortytwo.cinema.servlets;
 
+import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.ServletConfig;
@@ -11,11 +12,15 @@ import fr.fortytwo.cinema.models.User;
 
 // ---------
 import java.io.IOException;
+import java.io.PrintWriter;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet(name = "UsersServlet", urlPatterns = { "/users", "/users/signIn", "/users/signUp" })
+@WebServlet(name = "UsersServlet", urlPatterns = { "/users/", "/users", "/users/signIn", "/users/signUp",
+        "/users/signIn/", "/users/signUp/" })
+
 public class UsersServlet extends HttpServlet {
     private UsersService usersService;
 
@@ -27,11 +32,23 @@ public class UsersServlet extends HttpServlet {
         assert usersService != null;
     }
 
+    // if already signed in, redirect to profile
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        if (req.getSession().getAttribute("user") != null) {
+            resp.sendRedirect("/Cinema/profile");
+            return;
+        }
+        super.service(req, resp);
+    }
+
     // handle sign in
     private void signIn(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        JSONObject jsonRequest = (JSONObject) req.getAttribute("jsonRequest");
         // getting the body of the request
-        String phoneNumber = req.getParameter("phone_number");
-        String password = req.getParameter("password");
+        String phoneNumber = jsonRequest.getString("phone_number");
+        String password = jsonRequest.getString("password");
+        System.out.println("phone_number: " + phoneNumber + " password: " + password);
         if (phoneNumber == null || password == null) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
@@ -39,7 +56,7 @@ public class UsersServlet extends HttpServlet {
         try {
             User user = usersService.signIn(phoneNumber, password);
             req.getSession().setAttribute("user", user);
-            resp.sendRedirect("/Cinema/profile"); // redirect to "/profile
+            resp.sendRedirect("/Cinema/profile");
         } catch (Exception e) {
             System.out.println("User doesn't exist");
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -47,13 +64,14 @@ public class UsersServlet extends HttpServlet {
     }
 
     // handle sign up
-
     private void signUp(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        JSONObject jsonRequest = (JSONObject) req.getAttribute("jsonRequest");
+
         // getting the body of the request
-        String first_name = req.getParameter("first_name");
-        String last_name = req.getParameter("last_name");
-        String user_password = req.getParameter("password");
-        String phone_number = req.getParameter("phone_number");
+        String first_name = jsonRequest.getString("first_name");
+        String last_name = jsonRequest.getString("last_name");
+        String user_password = jsonRequest.getString("password");
+        String phone_number = jsonRequest.getString("phone_number");
         System.out.println("first_name: " + first_name + " last_name: " + last_name + " password: " + user_password
                 + " phone_number: " + phone_number);
         if (first_name == null || last_name == null || user_password == null || phone_number == null) {
@@ -64,16 +82,21 @@ public class UsersServlet extends HttpServlet {
             User user = usersService.signUp(first_name, last_name, user_password, phone_number);
             System.out.println("User created : " + user);
             req.getSession().setAttribute("user", user);
-            resp.sendRedirect("/Cinema/profile"); // redirect to "/profile
+            resp.sendRedirect("/Cinema/profile");
         } catch (Exception e) {
             System.err.println("Err: " + e.getMessage());
-            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String path = req.getServletPath();
+        // remove trailing slash for non-root paths
+        if (path.length() > 1 && path.endsWith("/")) {
+            System.out.println("we've removed the trailing slash from the path: " + path);
+            path = path.substring(0, path.length() - 1);
+        }
         switch (path) {
             case "/users/signIn":
                 req.getRequestDispatcher("/WEB-INF/html/Signin.html").forward(req, resp);
@@ -84,9 +107,6 @@ public class UsersServlet extends HttpServlet {
             case "/users":
                 req.getRequestDispatcher("/WEB-INF/html/Landing.html").forward(req, resp);
                 break;
-            // case "/":
-            // req.getRequestDispatcher("/WEB-INF/html/Landing.html").forward(req, resp);
-            // break;
             default:
                 resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 break;
@@ -98,6 +118,7 @@ public class UsersServlet extends HttpServlet {
         String path = req.getServletPath();
         switch (path) {
             case "/users/signIn":
+                System.out.println("we've received a post request to /users/signIn");
                 signIn(req, res);
                 break;
             case "/users/signUp":

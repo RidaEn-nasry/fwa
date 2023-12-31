@@ -85,11 +85,64 @@
     }
 </style>
 <div class="signin-body">
-    <form action="signIn" method="POST">
+    <form>
         <input name="phone_number" placeholder="Phone number" type="tel" />
         <input name="password" placeholder="Password" type="password" />
-        <button type="submit">SIGN IN</button>
+        <button class="submit-button">SIGN IN</button>
     </form>
 </div>
+<script>
+    // submit form when button is clicked 
+    const button = document.querySelector(".submit-button");
+    button.addEventListener("click", (e) => {
+        e.preventDefault();
+        const form = document.querySelector("form");
+        const phone_number = document.querySelector("input[name='phone_number']");
+        // 0-1
+        const phone_number_regex = /^\d{10}$/;
+        if (!phone_number_regex.test(phone_number.value)) {
+            alert("Invalid phone number");
+            return;
+        }
+        const password = document.querySelector("input[name='password']");
+        
+
+
+
+        if (phone_number.value == "" || password.value == "") {
+            alert("Please fill in all fields");
+            return;
+        }
+
+        const data = {
+            phone_number: phone_number.value,
+            password: password.value
+        };
+
+
+        const url = "http://localhost:8080/Cinema/users/signIn";
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data),
+        })
+            .then(data => {
+                console.log("Data: " + data);
+                if (data.status == 200) {
+                    window.location.href = "http://localhost:8080/Cinema/profile";
+                } else if (data.status == 401) {
+                    alert("Incorrect phone number or password");
+                } else {
+                    alert("Error: " + data.status);
+                }
+            })
+            .catch((error) => {
+                alert("an error occurred: " + error);
+                console.error('Error:', error);
+            });
+    });
+</script>
 
 </html>

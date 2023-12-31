@@ -7,10 +7,6 @@ import java.util.Properties;
 import javax.sql.DataSource;
 import javax.xml.crypto.Data;
 
-// using jakrarta insteead
-// import jakarta.sql.DataSource;
-// import jakarta.xml.crypto.Data;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -26,6 +22,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.context.support.ServletContextResource;
 
 import com.zaxxer.hikari.HikariDataSource;
+
+import fr.fortytwo.cinema.models.User;
+import fr.fortytwo.cinema.repositories.UsersRepository;
 
 @Configuration
 @ComponentScan("fr.fortytwo.cinema")
@@ -76,22 +75,6 @@ public class AppConfig {
         return populator;
     }
 
-    // @Bean
-    // public ResourceDatabasePopulator databaseCleaner() {
-
-    // final ResourceDatabasePopulator cleaner = new ResourceDatabasePopulator();
-    // cleaner.addScript(new ClassPathResource("sql/clean.sql"));
-    // return cleaner;
-    // }
-
-    // // database cleaner
-    // @Bean
-    // public DataSourceInitializer DataSourceCleaner() {
-    // final DataSourceInitializer cleaner = new DataSourceInitializer();
-    // cleaner.setDataSource(getHikariDataSource());
-    // cleaner.setDatabaseCleaner(databaseCleaner());
-    // return cleaner;
-    // }
 
     @Bean
     public BCryptPasswordEncoder getPasswordEncoder() {

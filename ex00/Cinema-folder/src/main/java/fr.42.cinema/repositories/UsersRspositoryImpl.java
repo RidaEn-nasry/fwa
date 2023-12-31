@@ -13,7 +13,6 @@ import javax.sql.DataSource;
 
 import org.postgresql.jdbc.FieldMetadata.Key;
 
-// import jakarta.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -85,19 +84,32 @@ public class UsersRspositoryImpl implements UsersRepository {
 
     @Override
     public User update(User newUser) {
-        // implement this later
-        return null;
+        KeyHolder holder = new GeneratedKeyHolder();
+        String sql = "UPDATE users SET first_name = ?, last_name = ?, phone_number = ?, user_password = ? WHERE id = ?";
+        this.jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, newUser.getFirstName());
+            ps.setString(2, newUser.getLastName());
+            ps.setString(3, newUser.getPhoneNumber());
+            ps.setString(4, newUser.getPassword());
+            ps.setLong(5, newUser.getId());
+            return ps;
+        }, holder);
+        return newUser;
     }
 
     @Override
     public void delete(Long id) {
-        // implement this later
+        String sql = "DELETE FROM users WHERE id = ?";
+        this.jdbcTemplate.update(sql, id);
     }
 
     @Override
     public User findByFirstName(String firstName) {
-        // implement this later
-        return null;
+        String sql = "SELECT * FROM users WHERE first_name = ?";
+        User user = (User) this.jdbcTemplate.queryForObject(sql, new UserRowMapper(), firstName);
+        return user;
+
     }
 
     @Override
