@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import fr.fortytwo.cinema.repositories.UsersRepository;
 import fr.fortytwo.cinema.services.UsersService;
+import fr.fortytwo.cinema.models.User;
 
 @Service("usersServiceImpl")
 public class UsersServiceImpl implements UsersService {
@@ -18,12 +19,24 @@ public class UsersServiceImpl implements UsersService {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public void signUp(String firstName, String lastName, String password, String phoneNumber) {
-        // implement this later
+    public User signUp(String firstName, String lastName, String password, String phoneNumber) {
+        User user = new User();
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setPhoneNumber(phoneNumber);
+        return UsersRepository.save(user);
     }
 
     @Override
-    public void signIn(String firstName, String lastName) {
-        // implement this later
+    public User signIn(String phoneNumber, String password) {
+        User user = UsersRepository.findByPhoneNumber(phoneNumber);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new RuntimeException("Wrong password");
+        }
+        return user;
     }
 }

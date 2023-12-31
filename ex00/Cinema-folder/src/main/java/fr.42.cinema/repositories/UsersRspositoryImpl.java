@@ -3,11 +3,15 @@ package fr.fortytwo.cinema.repositories;
 import fr.fortytwo.cinema.models.User;
 import fr.fortytwo.cinema.repositories.UsersRepository;
 
+import java.sql.Statement;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
 import javax.sql.DataSource;
+
+import org.postgresql.jdbc.FieldMetadata.Key;
 
 // import jakarta.sql.DataSource;
 
@@ -32,7 +36,7 @@ public class UsersRspositoryImpl implements UsersRepository {
             user.setId(rs.getLong("id"));
             user.setFirstName(rs.getString("first_name"));
             user.setLastName(rs.getString("last_name"));
-            user.setPassword(rs.getString("password"));
+            user.setPassword(rs.getString("user_password"));
             user.setPhoneNumber(rs.getString("phone_number"));
             return user;
         }
@@ -62,11 +66,20 @@ public class UsersRspositoryImpl implements UsersRepository {
     public User save(User newUser) {
         KeyHolder holder = new GeneratedKeyHolder();
         // saving and returning the new user, with the id set
-        String sql = "INSERT INTO users (first_name, last_name, phone_number, password) VALUES (?, ?, ?, ?)";
-        this.jdbcTemplate.update(sql, newUser.getFirstName(), newUser.getLastName(), newUser.getPhoneNumber(),
-                newUser.getPassword(), holder);
-        Long newUserId = holder.getKey().longValue();
-        newUser.setId(newUserId);
+        String sql = "INSERT INTO users (first_name, last_name, phone_number, user_password) VALUES (?, ?, ?, ?)";
+        this.jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, newUser.getFirstName());
+            ps.setString(2, newUser.getLastName());
+            ps.setString(3, newUser.getPhoneNumber());
+            ps.setString(4, newUser.getPassword());
+            return ps;
+        }, holder);
+
+        Integer id = (Integer) holder.getKeys().get("id");
+
+        newUser.setId(id.longValue());
+
         return newUser;
     }
 
@@ -85,6 +98,13 @@ public class UsersRspositoryImpl implements UsersRepository {
     public User findByFirstName(String firstName) {
         // implement this later
         return null;
+    }
+
+    @Override
+    public User findByPhoneNumber(String phoneNumber) {
+        String sql = "SELECT * FROM users WHERE phone_number = ?";
+        User user = (User) this.jdbcTemplate.queryForObject(sql, new UserRowMapper(), phoneNumber);
+        return user;
     }
 
 }

@@ -56,12 +56,6 @@ public class AppConfig {
     }
 
     @Bean
-    public int sayHello() {
-        System.out.println("Hello from AppConfig");
-        return 0;
-    }
-
-    @Bean
     public JdbcTemplate getJdbcTemplate() {
         return new JdbcTemplate(getHikariDataSource());
     }
@@ -78,7 +72,7 @@ public class AppConfig {
     public ResourceDatabasePopulator databasePopulator() {
         final ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
         populator.addScript(new ClassPathResource("sql/schema.sql"));
-        populator.addScript(new ClassPathResource("sql/data.sql"));
+        // populator.addScript(new ClassPathResource("sql/data.sql"));
         return populator;
     }
 
