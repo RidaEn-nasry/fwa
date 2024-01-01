@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> sign up </title>
+</head>
+
+<!-- style -->
+<style>
+    @import url("https://fonts.googleapis.com/css?family=Fjalla+One&display=swap");
+
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        background-size: cover;
+        width: 100vw;
+        height: 100vh;
+        display: grid;
+        align-items: center;
+        justify-items: center;
+    }
+
+    .signup-body {
+        background: #f8f4e5;
+        padding: 50px 100px;
+        border: 2px solid black;
+        box-shadow: 15px 15px 1px #ffa580, 15px 15px 1px 2px black;
+    }
+
+    input {
+        display: block;
+        width: 100%;
+        font-size: 14pt;
+        line-height: 28pt;
+        font-family: "Fjalla One";
+        margin-bottom: 28pt;
+        border: none;
+        border-bottom: 5px solid black;
+        background: #f8f4e5;
+        min-width: 250px;
+        padding-left: 5px;
+        outline: none;
+        color: black;
+    }
+
+    input:focus {
+        border-bottom: 5px solid #ffa580;
+    }
+
+    button {
+        display: block;
+        margin: 0 auto;
+        line-height: 28pt;
+        padding: 0 20px;
+        background: #ffa580;
+        letter-spacing: 2px;
+        transition: 0.2s all ease-in-out;
+        outline: none;
+        border: 1px solid black;
+        box-shadow: 3px 3px 1px 1px #95a4ff, 3px 3px 1px 2px black;
+    }
+
+    button:hover {
+        background: black;
+        color: white;
+        border: 1px solid black;
+        cursor: pointer;
+    }
+
+    ::selection {
+        background: #ffc8ff;
+    }
+
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus {
+        border-bottom: 5px solid #95a4ff;
+        -webkit-text-fill-color: #2A293E;
+        -webkit-box-shadow: 0 0 0px 1000px #f8f4e5 inset;
+        transition: background-color 5000s ease-in-out 0s;
+    }
+</style>
+<div class="signup-body">
+    <!-- <form> -->
+    <input name="first_name" placeholder="First Name" type="text" class="first_name" />
+    <input name="last_name" placeholder="Last Name" type="text" class="last_name" />
+    <input name="phone_number" placeholder="Phone Number" type="text" class="phone_number" />
+    <input name="password" placeholder="Password" type="password" class="password" />
+    <input name="confirm_password" placeholder="Confirm Password" type="password" />
+    <button class="submit-button" type="submit">SIGN UP</button>
+    <!-- </form> -->
+</div>
+<script>
+    const button = document.querySelector(".submit-button");
+    button.addEventListener("click", (e) => {
+        e.preventDefault();
+        const form = document.querySelector("form");
+        const first_name = document.querySelector("input[name='first_name']");
+        const last_name = document.querySelector("input[name='last_name']");
+        const phone_number = document.querySelector("input[name='phone_number']");
+        // check if phone number is valid, by regex,
+
+
+        const password = document.querySelector("input[name='password']");
+        const confirm_password = document.querySelector("input[name='confirm_password']");
+        if (password.value !== confirm_password.value) {
+            alert("Passwords do not match");
+            return;
+        }
+
+        // validate password, 8-16 characters, at least 1 number, 1 special character
+        const password_regex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,16}$/;
+        if (!password_regex.test(password.value)) {
+            alert("please enter a stronger password");
+            return;
+        }
+
+
+        if (first_name.value === "" || last_name.value === "" || phone_number.value === "" || password.value === "" || confirm_password.value === "") {
+            alert("Please fill in all fields");
+            return;
+        }
+        const url = "http://localhost:8080/Cinema/users/signUp";
+        const data = {
+            first_name: first_name.value,
+            last_name: last_name.value,
+            phone_number: phone_number.value,
+            password: password.value
+        };
+        fetch(url, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include"
+        })
+            .then(data => {
+                if (data.status == 200) {
+                    window.location.href = "http://localhost:8080/Cinema/profile";
+                }
+                else if (data.status == 409) {
+                    alert("Account already exists");
+                } else if (data.status == 400) {
+                    alert("Invalid data, please try again");
+                }
+                else {
+                    alert("Error: " + data.status);
+                }
+            })
+            .catch((error) => {
+                alert("Error: " + error);
+            });
+    });
+
+</script>
+
+</html>
