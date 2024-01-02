@@ -19,18 +19,19 @@ public class UsersServiceImpl implements UsersService {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public User signUp(String firstName, String lastName, String password, String phoneNumber) {
+    public User signUp(String firstName, String lastName, String password, String phoneNumber, String email) {
         User user = new User();
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setPassword(passwordEncoder.encode(password));
         user.setPhoneNumber(phoneNumber);
+        user.setEmail(email);
         return UsersRepository.save(user);
     }
 
     @Override
-    public User signIn(String phoneNumber, String password) {
-        User user = UsersRepository.findByPhoneNumber(phoneNumber);
+    public User signIn(String email, String password) {
+        User user = UsersRepository.findByEmail(email);
         if (user == null) {
             throw new RuntimeException("User not found");
         }

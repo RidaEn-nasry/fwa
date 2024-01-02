@@ -13,7 +13,6 @@ import javax.sql.DataSource;
 
 import org.postgresql.jdbc.FieldMetadata.Key;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -37,6 +36,7 @@ public class UsersRspositoryImpl implements UsersRepository {
             user.setLastName(rs.getString("last_name"));
             user.setPassword(rs.getString("user_password"));
             user.setPhoneNumber(rs.getString("phone_number"));
+            user.setEmail(rs.getString("email"));
             return user;
         }
     }
@@ -65,13 +65,14 @@ public class UsersRspositoryImpl implements UsersRepository {
     public User save(User newUser) {
         KeyHolder holder = new GeneratedKeyHolder();
         // saving and returning the new user, with the id set
-        String sql = "INSERT INTO users (first_name, last_name, phone_number, user_password) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO users (first_name, last_name, phone_number, user_password, email) VALUES (?, ?, ?, ?, ?)";
         this.jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, newUser.getFirstName());
             ps.setString(2, newUser.getLastName());
             ps.setString(3, newUser.getPhoneNumber());
             ps.setString(4, newUser.getPassword());
+            ps.setString(5, newUser.getEmail());
             return ps;
         }, holder);
 
@@ -85,13 +86,14 @@ public class UsersRspositoryImpl implements UsersRepository {
     @Override
     public User update(User newUser) {
         KeyHolder holder = new GeneratedKeyHolder();
-        String sql = "UPDATE users SET first_name = ?, last_name = ?, phone_number = ?, user_password = ? WHERE id = ?";
+        String sql = "UPDATE users SET first_name = ?, last_name = ?, phone_number = ?, user_password = ?, email = ? WHERE id = ?";
         this.jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, newUser.getFirstName());
             ps.setString(2, newUser.getLastName());
             ps.setString(3, newUser.getPhoneNumber());
             ps.setString(4, newUser.getPassword());
+            ps.setString(5, newUser.getEmail());
             ps.setLong(5, newUser.getId());
             return ps;
         }, holder);
@@ -110,6 +112,13 @@ public class UsersRspositoryImpl implements UsersRepository {
         User user = (User) this.jdbcTemplate.queryForObject(sql, new UserRowMapper(), firstName);
         return user;
 
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        String sql = "SELECT * FROM users WHERE email = ?";
+        User user = (User) this.jdbcTemplate.queryForObject(sql, new UserRowMapper(), email);
+        return user;
     }
 
     @Override

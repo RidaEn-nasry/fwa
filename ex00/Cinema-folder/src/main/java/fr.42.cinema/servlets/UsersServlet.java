@@ -42,13 +42,11 @@ public class UsersServlet extends HttpServlet {
         super.service(req, resp);
     }
 
-    // handle sign in
     private void signIn(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         JSONObject jsonRequest = (JSONObject) req.getAttribute("jsonRequest");
         // getting the body of the request
-        String phoneNumber = jsonRequest.getString("phone_number");
+        String phoneNumber = jsonRequest.getString("email");
         String password = jsonRequest.getString("password");
-        System.out.println("phone_number: " + phoneNumber + " password: " + password);
         if (phoneNumber == null || password == null) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
@@ -58,7 +56,6 @@ public class UsersServlet extends HttpServlet {
             req.getSession().setAttribute("user", user);
             resp.sendRedirect("/Cinema/profile");
         } catch (Exception e) {
-            System.out.println("User doesn't exist");
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
     }
@@ -72,15 +69,13 @@ public class UsersServlet extends HttpServlet {
         String last_name = jsonRequest.getString("last_name");
         String user_password = jsonRequest.getString("password");
         String phone_number = jsonRequest.getString("phone_number");
-        System.out.println("first_name: " + first_name + " last_name: " + last_name + " password: " + user_password
-                + " phone_number: " + phone_number);
-        if (first_name == null || last_name == null || user_password == null || phone_number == null) {
+        String email = jsonRequest.getString("email");
+        if (first_name == null || last_name == null || user_password == null || phone_number == null || email == null) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
         try {
-            User user = usersService.signUp(first_name, last_name, user_password, phone_number);
-            System.out.println("User created : " + user);
+            User user = usersService.signUp(first_name, last_name, user_password, phone_number, email);
             req.getSession().setAttribute("user", user);
             resp.sendRedirect("/Cinema/profile");
         } catch (Exception e) {

@@ -86,7 +86,7 @@
 </style>
 <div class="signin-body">
     <form>
-        <input name="phone_number" placeholder="Phone number" type="tel" />
+        <input name="email" placeholder="Email" type="text" />
         <input name="password" placeholder="Password" type="password" />
         <button class="submit-button">SIGN IN</button>
     </form>
@@ -97,25 +97,25 @@
     button.addEventListener("click", (e) => {
         e.preventDefault();
         const form = document.querySelector("form");
-        const phone_number = document.querySelector("input[name='phone_number']");
+        const email = document.querySelector("input[name='email']");
         // 0-1
-        const phone_number_regex = /^\d{10}$/;
-        if (!phone_number_regex.test(phone_number.value)) {
-            alert("Invalid phone number");
-            return;
-        }
+        // const phone_number_regex = /^\d{10}$/;
+        // if (!phone_number_regex.test(phone_number.value)) {
+        //     alert("Invalid phone number");
+        //     return;
+        // }
         const password = document.querySelector("input[name='password']");
-        
 
 
 
-        if (phone_number.value == "" || password.value == "") {
+
+        if (email.value == "" || password.value == "") {
             alert("Please fill in all fields");
             return;
         }
 
         const data = {
-            phone_number: phone_number.value,
+            email: email.value,
             password: password.value
         };
 
@@ -133,7 +133,7 @@
                 if (data.status == 200) {
                     window.location.href = "http://localhost:8080/Cinema/profile";
                 } else if (data.status == 401) {
-                    alert("Incorrect phone number or password");
+                    alert("Incorrect email or password");
                 } else {
                     alert("Error: " + data.status);
                 }

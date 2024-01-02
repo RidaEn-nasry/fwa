@@ -8,24 +8,35 @@ public class User implements Serializable {
     private String lastName;
     private String phoneNumber;
     private String password;
+    private String email;
 
     public User() {
 
     }
 
-    public User(String firstName, String lastName, String phoneNumber, String password) {
+    public User(String firstName, String lastName, String phoneNumber, String password, String email) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
         this.password = password;
+        this.email = email;
     }
 
-    public User(Long id, String firstName, String lastName, String phoneNumber, String password) {
+    public User(Long id, String firstName, String lastName, String phoneNumber, String password, String email) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
         this.password = password;
+        this.email = email;
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public Long getId() {
@@ -73,6 +84,7 @@ public class User implements Serializable {
         return "User{" +
                 "firstName='" + firstName + '\'' +
                 ", lastName=" + lastName +
+                ", email=" + email +
                 ", phoneNumber=" + phoneNumber +
                 ", password=" + password +
                 '}';
@@ -89,13 +101,14 @@ public class User implements Serializable {
 
         User otherUser = (User) o;
         return otherUser.getFirstName() == this.getFirstName() && otherUser.getLastName() == this.getLastName() &&
-                otherUser.getPhoneNumber() == this.getPhoneNumber() && otherUser.getPassword() == this.getPassword();
+                otherUser.getPhoneNumber() == this.getPhoneNumber()
+                && otherUser.getPassword() == this.getPassword() + this.getEmail();
     }
 
     @Override
     public int hashCode() {
         return this.getFirstName().hashCode() + this.getLastName().hashCode() + this.phoneNumber.hashCode()
-                + this.getPhoneNumber().hashCode();
+                + this.getPhoneNumber().hashCode() + this.email.hashCode();
     }
 
 }
