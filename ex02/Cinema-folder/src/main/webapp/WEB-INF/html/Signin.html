@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Signin </title>
+</head>
+
+<!-- style -->
+<style>
+    @import url("https://fonts.googleapis.com/css?family=Fjalla+One&display=swap");
+
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        background-size: cover;
+        width: 100vw;
+        height: 100vh;
+        display: grid;
+        align-items: center;
+        justify-items: center;
+    }
+
+    .signin-body {
+        background: #f8f4e5;
+        padding: 50px 100px;
+        border: 2px solid black;
+        box-shadow: 15px 15px 1px #ffa580, 15px 15px 1px 2px black;
+    }
+
+    input {
+        display: block;
+        width: 100%;
+        font-size: 14pt;
+        line-height: 28pt;
+        font-family: "Fjalla One";
+        margin-bottom: 28pt;
+        border: none;
+        border-bottom: 5px solid black;
+        background: #f8f4e5;
+        min-width: 250px;
+        padding-left: 5px;
+        outline: none;
+        color: black;
+    }
+
+    input:focus {
+        border-bottom: 5px solid #ffa580;
+    }
+
+    button {
+        display: block;
+        margin: 0 auto;
+        line-height: 28pt;
+        padding: 0 20px;
+        background: #ffa580;
+        letter-spacing: 2px;
+        transition: 0.2s all ease-in-out;
+        outline: none;
+        border: 1px solid black;
+        box-shadow: 3px 3px 1px 1px #95a4ff, 3px 3px 1px 2px black;
+    }
+
+    button:hover {
+        background: black;
+        color: white;
+        border: 1px solid black;
+    }
+
+    ::selection {
+        background: #ffc8ff;
+    }
+
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus {
+        border-bottom: 5px solid #95a4ff;
+        -webkit-text-fill-color: #2A293E;
+        -webkit-box-shadow: 0 0 0px 1000px #f8f4e5 inset;
+        transition: background-color 5000s ease-in-out 0s;
+    }
+</style>
+<div class="signin-body">
+    <form>
+        <input name="email" placeholder="Email" type="text" />
+        <input name="password" placeholder="Password" type="password" />
+        <button class="submit-button">SIGN IN</button>
+    </form>
+</div>
+<script>
+    // submit form when button is clicked 
+    const button = document.querySelector(".submit-button");
+    button.addEventListener("click", (e) => {
+        e.preventDefault();
+        const form = document.querySelector("form");
+        const email = document.querySelector("input[name='email']");
+        // 0-1
+        // const phone_number_regex = /^\d{10}$/;
+        // if (!phone_number_regex.test(phone_number.value)) {
+        //     alert("Invalid phone number");
+        //     return;
+        // }
+        const password = document.querySelector("input[name='password']");
+
+
+
+
+        if (email.value == "" || password.value == "") {
+            alert("Please fill in all fields");
+            return;
+        }
+
+        const data = {
+            email: email.value,
+            password: password.value
+        };
+
+
+        const url = "http://localhost:8080/Cinema/users/signIn";
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data),
+        })
+            .then(data => {
+                console.log("Data: " + data);
+                if (data.status == 200) {
+                    window.location.href = "http://localhost:8080/Cinema/profile";
+                } else if (data.status == 401) {
+                    alert("Incorrect email or password");
+                } else {
+                    alert("Error: " + data.status);
+                }
+            })
+            .catch((error) => {
+                alert("an error occurred: " + error);
+                console.error('Error:', error);
+            });
+    });
+</script>
+
+</html>
