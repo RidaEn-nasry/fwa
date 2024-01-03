@@ -54,8 +54,12 @@
 
 
 <!--  to remove -->
-[ ] check for 403 in client from authFilter
 
+# TODO
+[ ] check for 403 in client from authFilter
+[ ] add something (possibly filter) to log user authentications 
+[ ] add default error pages for common error codes
+[ ] figure out bassically the schema.sql file works when you hash passoword in sigup
 
 
 

@@ -40,4 +40,9 @@ public class UsersServiceImpl implements UsersService {
         }
         return user;
     }
+
+    @Override
+    public String updateProfilePicture(String imageUrl, Long userId) {
+        return UsersRepository.updateProfileImg(imageUrl, userId);
+    }
 }

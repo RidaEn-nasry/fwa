@@ -4,9 +4,11 @@ import fr.fortytwo.cinema.models.User;
 import fr.fortytwo.cinema.repositories.UsersRepository;
 
 import java.sql.Statement;
+import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -37,6 +39,11 @@ public class UsersRspositoryImpl implements UsersRepository {
             user.setPassword(rs.getString("user_password"));
             user.setPhoneNumber(rs.getString("phone_number"));
             user.setEmail(rs.getString("email"));
+            Array sqlArray = rs.getArray("image_urls");
+            if (sqlArray != null) {
+                String[] imageUrls = (String[]) sqlArray.getArray();
+                user.setImagesUrls(Arrays.asList(imageUrls));
+            }
             return user;
         }
     }
@@ -73,6 +80,7 @@ public class UsersRspositoryImpl implements UsersRepository {
             ps.setString(3, newUser.getPhoneNumber());
             ps.setString(4, newUser.getPassword());
             ps.setString(5, newUser.getEmail());
+
             return ps;
         }, holder);
 
@@ -126,6 +134,13 @@ public class UsersRspositoryImpl implements UsersRepository {
         String sql = "SELECT * FROM users WHERE phone_number = ?";
         User user = (User) this.jdbcTemplate.queryForObject(sql, new UserRowMapper(), phoneNumber);
         return user;
+    }
+
+    @Override
+    public String updateProfileImg(String imageUrl, Long userId) {
+        String sql = "UPDATE users SET images = array_append(images, ?) WHERE id = ?";
+        this.jdbcTemplate.update(sql, imageUrl, userId);
+        return imageUrl;
     }
 
 }

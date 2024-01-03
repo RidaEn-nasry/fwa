@@ -7,4 +7,7 @@ public interface UsersService {
     public User signUp(String firstName, String lastName, String password, String phoneNumber, String email);
 
     public User signIn(String email, String password);
+
+    public String updateProfilePicture(String imageUrl, Long userId);
+
 }

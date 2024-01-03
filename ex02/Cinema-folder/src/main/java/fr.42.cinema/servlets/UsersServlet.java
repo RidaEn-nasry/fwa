@@ -47,6 +47,7 @@ public class UsersServlet extends HttpServlet {
             req.getSession().setAttribute("user", user);
             resp.sendRedirect("/Cinema/profile");
         } catch (Exception e) {
+            System.err.println("Err: " + e.getMessage());
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
     }

@@ -1,6 +1,7 @@
 package fr.fortytwo.cinema.models;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class User implements Serializable {
     private Long id;
@@ -9,6 +10,8 @@ public class User implements Serializable {
     private String phoneNumber;
     private String password;
     private String email;
+
+    private List<String> imagesUrls;
 
     public User() {
 
@@ -77,6 +80,14 @@ public class User implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<String> getImagesUrls() {
+        return this.imagesUrls;
+    }
+
+    public void setImagesUrls(List<String> imagesUrls) {
+        this.imagesUrls = imagesUrls;
     }
 
     @Override

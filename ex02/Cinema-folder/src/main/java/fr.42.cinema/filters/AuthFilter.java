@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.FilterConfig;
 
-@WebFilter(urlPatterns = { "/profile", "/profile/" }, filterName = "AuthFilter")
+@WebFilter(urlPatterns = { "/profile/*" }, filterName = "AuthFilter")
 public class AuthFilter implements Filter {
 
     @Override
@@ -27,11 +27,9 @@ public class AuthFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) res;
         HttpServletRequest request = (HttpServletRequest) req;
         if (request.getSession().getAttribute("user") != null) {
-            request.getRequestDispatcher("/profile").forward(req, res);
+            chain.doFilter(req, res);
         } else {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            // return;
-            // response.sendRedirect("/Cinema/users/signIn");
         }
     }
 }

@@ -13,11 +13,6 @@ public class ProfileServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        HttpSession session = req.getSession();
-        if (session.getAttribute("user") == null) {
-            resp.sendRedirect("users/signIn");
-            return;
-        }
         req.getRequestDispatcher("/WEB-INF/jsp/Profile.jsp").forward(req, resp);
     }
 }
