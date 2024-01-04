@@ -17,7 +17,10 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS file_mapping (
     original_file_name VARCHAR(255) NOT NULL,
     generated_file_name VARCHAR(255) NOT NULL,
+    size INTEGER NOT NULL,
+    mime_type VARCHAR(50) NOT NULL,
     PRIMARY KEY (original_file_name, generated_file_name),
     user_id INTEGER NOT NULL,
+    path VARCHAR(255) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
 );

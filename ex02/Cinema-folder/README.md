@@ -68,3 +68,13 @@
 # RESOURCES
 
 [applets, servlets and JSP.](https://www.utc.fr/~dnace/dokuwiki/_media/fr/servletesjsp_translated.pdf)
+
+
+
+
+
+<!-- ********************************************* -->
+
+<!-- WE LEFT WITH THIS ERROR WHEN UPLOADING IMAGE TO PROFILE  -->
+<!-- Message PreparedStatementCallback; SQL [INSERT INTO file_mapping (original_file_name, generated_file_name, mime_type, size, path) VALUES (?, ?, ?, ?, ?)]; ERROR: null value in column "user_id" of relation "file_mapping" violates not-null constraint -->
+

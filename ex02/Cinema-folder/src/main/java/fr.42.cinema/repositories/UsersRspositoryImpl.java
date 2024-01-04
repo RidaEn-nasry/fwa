@@ -1,5 +1,6 @@
 package fr.fortytwo.cinema.repositories;
 
+import fr.fortytwo.cinema.models.FileMapping;
 import fr.fortytwo.cinema.models.User;
 import fr.fortytwo.cinema.repositories.UsersRepository;
 
@@ -33,28 +34,35 @@ public class UsersRspositoryImpl implements UsersRepository {
     DataSource ds;
     JdbcTemplate jdbcTemplate;
 
-    private Map<String, String> getUserFileMapping(Long userId) {
-        // get all rows from file_mapping table where user_id = userId
-        String sql = "SELECT * FROM file_mapping WHERE user_id = ?";
-        List<Map.Entry<String, String>> fileMapping = this.jdbcTemplate.query(sql, new FileMappingRowMapper(), userId);
-        // convert the list to a map
-        Map<String, String> fileMappingMap = new HashMap<String, String>();
-        for (Map.Entry<String, String> entry : fileMapping) {
-            fileMappingMap.put(entry.getKey(), entry.getValue());
-        }
-        return fileMappingMap;
+    @Autowired
+    public UsersRspositoryImpl(DataSource ds, JdbcTemplate jdbcTemplate) {
+        this.ds = ds;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    private class FileMappingRowMapper implements RowMapper<Map.Entry<String, String>> {
+    /**** FileMapping ****/
+    private class FileMappingRowMapper implements RowMapper<FileMapping> {
         @Override
-        public Map.Entry<String, String> mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new SimpleEntry<String, String>(rs.getString("original_file_name"),
-                    rs.getString("generated_file_name"));
+        public FileMapping mapRow(ResultSet rs, int rowNum) throws SQLException {
+            FileMapping fileMapping = new FileMapping();
+            fileMapping.setOriginalFileName(rs.getString("original_file_name"));
+            fileMapping.setGeneratedFileName(rs.getString("generated_file_name"));
+            fileMapping.setMimeType(rs.getString("mime_type"));
+            fileMapping.setSize(rs.getInt("size"));
+            fileMapping.setPath(rs.getString("path"));
+            return fileMapping;
+
         }
     }
 
-    private class UserRowMapper implements RowMapper<User> {
+    public List<FileMapping> findByUserId(Long userId) {
+        String sql = "SELECT * FROM file_mapping WHERE user_id = ?";
+        List<FileMapping> fileMapping = this.jdbcTemplate.query(sql, new FileMappingRowMapper(), userId);
+        return fileMapping;
+    }
 
+    /**** User ****/
+    private class UserRowMapper implements RowMapper<User> {
         @Override
         public User mapRow(ResultSet rs, int rowNum) throws SQLException {
             User user = new User();
@@ -64,15 +72,9 @@ public class UsersRspositoryImpl implements UsersRepository {
             user.setPassword(rs.getString("user_password"));
             user.setPhoneNumber(rs.getString("phone_number"));
             user.setEmail(rs.getString("email"));
-            user.setFileMapping(getUserFileMapping(user.getId()));
+            user.setFileMapping(findByUserId(user.getId()));
             return user;
         }
-    }
-
-    @Autowired
-    public UsersRspositoryImpl(DataSource ds, JdbcTemplate jdbcTemplate) {
-        this.ds = ds;
-        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override

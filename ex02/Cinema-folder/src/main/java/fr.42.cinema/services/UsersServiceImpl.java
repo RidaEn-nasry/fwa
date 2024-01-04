@@ -2,21 +2,28 @@
 package fr.fortytwo.cinema.services;
 
 import java.io.IOException;
-
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import fr.fortytwo.cinema.repositories.FileMappingRepository;
 import fr.fortytwo.cinema.repositories.UsersRepository;
 import fr.fortytwo.cinema.services.UsersService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Part;
+import fr.fortytwo.cinema.models.FileMapping;
 import fr.fortytwo.cinema.models.User;
 import jakarta.servlet.ServletException;
+
 @Service("usersServiceImpl")
 public class UsersServiceImpl implements UsersService {
 
     @Autowired
     private UsersRepository UsersRepository;
+
+    @Autowired
+    private FileMappingRepository fileMappingRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -45,12 +52,31 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
-    public String updateProfilePicture(String originalFileName, Long userId, String storagePath,
-            HttpServletRequest request) throws ServletException, IOException {
-        String ext = originalFileName.substring(originalFileName.lastIndexOf("."));
-        originalFileName = originalFileName.substring(0, originalFileName.lastIndexOf("."));
-        String generatedFileName = originalFileName + userId + System.currentTimeMillis() + ext;
-        request.getPart("file").write(storagePath + generatedFileName);
-        return UsersRepository.updateProfileImg(originalFileName + ext, generatedFileName, userId);
+    public FileMapping updateProfilePicture(Part filePart, Long userId, String storagePath)
+            throws IOException, ServletException {
+        FileMapping fileMapping = new FileMapping();
+        fileMapping.setOriginalFileName(filePart.getSubmittedFileName());
+        String ext = fileMapping.getOriginalFileName().substring(fileMapping.getOriginalFileName().lastIndexOf("."));
+        String hashedFileName = fileMapping.getOriginalFileName().lastIndexOf('.') + "_" + userId + "_"
+                + System.currentTimeMillis()
+                + ext;
+        fileMapping.setGeneratedFileName(hashedFileName);
+        fileMapping.setMimeType(filePart.getContentType());
+        fileMapping.setSize((int) filePart.getSize());
+        fileMapping.setPath(storagePath);
+        fileMappingRepository.save(fileMapping);
+        return fileMapping;
     }
+
+    @Override
+    
+    public List<FileMapping> getProfilePictures(Long userId) {
+        return UsersRepository.findByUserId(userId);
+    }
+
+    @Override
+    public FileMapping getProfilePictureByName(String originalFileName) {
+        return fileMappingRepository.findByOriginalFileName(originalFileName);
+    }
+
 }

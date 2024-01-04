@@ -19,6 +19,7 @@ import java.security.NoSuchAlgorithmException;
 
 import org.springframework.context.ApplicationContext;
 import fr.fortytwo.cinema.services.UsersService;
+import fr.fortytwo.cinema.models.FileMapping;
 import fr.fortytwo.cinema.models.User;
 
 @WebServlet(name = "StaticFilesServlet", urlPatterns = { "/images/*" })
@@ -45,7 +46,8 @@ public class StaticFilesServlet extends HttpServlet {
             return;
         }
         User user = (User) req.getSession().getAttribute("user");
-        usersService.updateProfilePicture(fileName, user.getId(), StoragePath, req);
+
+        usersService.updateProfilePicture(req.getPart("file"), user.getId(), StoragePath);
         resp.setStatus(HttpServletResponse.SC_CREATED);
         // resp.set
 
@@ -58,17 +60,18 @@ public class StaticFilesServlet extends HttpServlet {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
-        fileName = fileName.substring(1);
-        System.out.println("fileName: " + fileName);
-        // String requestedFileName = fileName;
-        User user = (User) req.getSession().getAttribute("user");
-        String filePath = StoragePath + fileName;
-        System.out.println("filePath: " + filePath);
+
+        FileMapping fileMapping = usersService.getProfilePictureByName(fileName);
+        if (fileMapping == null) {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        String filePath = StoragePath + fileMapping.getGeneratedFileName();
         File file = new File(filePath);
         if (file.exists()) {
-            // resp.sendRedirect(filePath);
-            resp.setHeader("Content-Type", getServletContext().getMimeType(fileName));
-            resp.setHeader("Content-Length", String.valueOf(file.length()));
+            resp.setContentType(fileMapping.getMimeType());
+            resp.setContentLength(fileMapping.getSize().intValue());
+            resp.setHeader("Content-Disposition", "inline; filename=\"" + fileMapping.getOriginalFileName() + "\"");
             Files.copy(Paths.get(filePath), resp.getOutputStream());
         } else {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND);

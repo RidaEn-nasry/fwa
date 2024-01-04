@@ -2,6 +2,9 @@ package fr.fortytwo.cinema.repositories;
 
 import fr.fortytwo.cinema.models.User;
 import fr.fortytwo.cinema.repositories.CrudRepository;
+import fr.fortytwo.cinema.models.FileMapping;
+import java.util.List;
+
 
 public interface UsersRepository extends CrudRepository<User> {
 
@@ -12,4 +15,6 @@ public interface UsersRepository extends CrudRepository<User> {
     public User findByPhoneNumber(String phoneNumber);
 
     public String updateProfileImg(String originalFileName, String generatedFileName, Long userId);
+
+    public List<FileMapping> findByUserId(Long userId);
 }
