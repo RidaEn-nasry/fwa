@@ -117,9 +117,4 @@ public class UsersServlet extends HttpServlet {
         }
     }
 
-    @Override
-    public void destroy() {
-        usersService = null;
-    }
-
 }

@@ -9,7 +9,15 @@ CREATE TABLE IF NOT EXISTS users (
     CONSTRAINT unique_user UNIQUE (first_name, last_name),
     email VARCHAR(255) NOT NULL UNIQUE,
     user_password VARCHAR(60) NOT NULL,
-    phone_number VARCHAR(255) NOT NULL UNIQUE,
-    image_urls VARCHAR(255) []
-);
+    phone_number VARCHAR(255) NOT NULL UNIQUE
+    );
 
+
+
+CREATE TABLE IF NOT EXISTS file_mapping (
+    original_file_name VARCHAR(255) NOT NULL,
+    generated_file_name VARCHAR(255) NOT NULL,
+    PRIMARY KEY (original_file_name, generated_file_name),
+    user_id INTEGER NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
+);

@@ -4,6 +4,7 @@ import fr.fortytwo.cinema.models.User;
 import fr.fortytwo.cinema.repositories.UsersRepository;
 
 import java.sql.Statement;
+import java.io.File;
 import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,12 +22,36 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
+import fr.fortytwo.cinema.models.User;
+import java.util.Map;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.HashMap;
 
 @Repository("usersRepositoryImpl")
 public class UsersRspositoryImpl implements UsersRepository {
 
     DataSource ds;
     JdbcTemplate jdbcTemplate;
+
+    private Map<String, String> getUserFileMapping(Long userId) {
+        // get all rows from file_mapping table where user_id = userId
+        String sql = "SELECT * FROM file_mapping WHERE user_id = ?";
+        List<Map.Entry<String, String>> fileMapping = this.jdbcTemplate.query(sql, new FileMappingRowMapper(), userId);
+        // convert the list to a map
+        Map<String, String> fileMappingMap = new HashMap<String, String>();
+        for (Map.Entry<String, String> entry : fileMapping) {
+            fileMappingMap.put(entry.getKey(), entry.getValue());
+        }
+        return fileMappingMap;
+    }
+
+    private class FileMappingRowMapper implements RowMapper<Map.Entry<String, String>> {
+        @Override
+        public Map.Entry<String, String> mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return new SimpleEntry<String, String>(rs.getString("original_file_name"),
+                    rs.getString("generated_file_name"));
+        }
+    }
 
     private class UserRowMapper implements RowMapper<User> {
 
@@ -39,11 +64,7 @@ public class UsersRspositoryImpl implements UsersRepository {
             user.setPassword(rs.getString("user_password"));
             user.setPhoneNumber(rs.getString("phone_number"));
             user.setEmail(rs.getString("email"));
-            Array sqlArray = rs.getArray("image_urls");
-            if (sqlArray != null) {
-                String[] imageUrls = (String[]) sqlArray.getArray();
-                user.setImagesUrls(Arrays.asList(imageUrls));
-            }
+            user.setFileMapping(getUserFileMapping(user.getId()));
             return user;
         }
     }
@@ -137,10 +158,16 @@ public class UsersRspositoryImpl implements UsersRepository {
     }
 
     @Override
-    public String updateProfileImg(String imageUrl, Long userId) {
-        String sql = "UPDATE users SET images = array_append(images, ?) WHERE id = ?";
-        this.jdbcTemplate.update(sql, imageUrl, userId);
-        return imageUrl;
+    public String updateProfileImg(String originalFileName, String generatedFileName, Long userId) {
+        String sql = "INSERT INTO file_mapping (original_file_name, generated_file_name, user_id) VALUES (?, ?, ?)";
+        this.jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, originalFileName);
+            ps.setString(2, generatedFileName);
+            ps.setLong(3, userId);
+            return ps;
+        });
+        return generatedFileName;
     }
 
 }

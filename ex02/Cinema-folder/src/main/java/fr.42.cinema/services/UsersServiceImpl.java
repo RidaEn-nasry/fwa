@@ -1,14 +1,17 @@
 
 package fr.fortytwo.cinema.services;
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import fr.fortytwo.cinema.repositories.UsersRepository;
 import fr.fortytwo.cinema.services.UsersService;
+import jakarta.servlet.http.HttpServletRequest;
 import fr.fortytwo.cinema.models.User;
-
+import jakarta.servlet.ServletException;
 @Service("usersServiceImpl")
 public class UsersServiceImpl implements UsersService {
 
@@ -42,7 +45,12 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
-    public String updateProfilePicture(String imageUrl, Long userId) {
-        return UsersRepository.updateProfileImg(imageUrl, userId);
+    public String updateProfilePicture(String originalFileName, Long userId, String storagePath,
+            HttpServletRequest request) throws ServletException, IOException {
+        String ext = originalFileName.substring(originalFileName.lastIndexOf("."));
+        originalFileName = originalFileName.substring(0, originalFileName.lastIndexOf("."));
+        String generatedFileName = originalFileName + userId + System.currentTimeMillis() + ext;
+        request.getPart("file").write(storagePath + generatedFileName);
+        return UsersRepository.updateProfileImg(originalFileName + ext, generatedFileName, userId);
     }
 }

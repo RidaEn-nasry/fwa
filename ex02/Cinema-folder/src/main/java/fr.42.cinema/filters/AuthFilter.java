@@ -12,13 +12,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.FilterConfig;
 
-@WebFilter(urlPatterns = { "/profile/*" }, filterName = "AuthFilter")
+// rida.ennasry@gmail.com
+//root@root1234
+@WebFilter(urlPatterns = { "/profile/*", "/images/*" }, filterName = "AuthFilter")
 public class AuthFilter implements Filter {
-
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        // TODO Auto-generated method stub
-    }
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)

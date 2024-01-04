@@ -43,6 +43,9 @@ public class AppConfig {
     @Value("${db.password}")
     private String dbPassword;
 
+    @Value("${storage.path}")
+    private String uploadPath;
+
     @Bean
     @Scope("singleton")
     public DataSource getHikariDataSource() {
@@ -75,10 +78,8 @@ public class AppConfig {
         return populator;
     }
 
-
     @Bean
     public BCryptPasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }

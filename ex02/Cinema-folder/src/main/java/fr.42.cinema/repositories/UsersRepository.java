@@ -11,6 +11,5 @@ public interface UsersRepository extends CrudRepository<User> {
 
     public User findByPhoneNumber(String phoneNumber);
 
-    public String updateProfileImg(String imageUrl, Long userId);
-
+    public String updateProfileImg(String originalFileName, String generatedFileName, Long userId);
 }

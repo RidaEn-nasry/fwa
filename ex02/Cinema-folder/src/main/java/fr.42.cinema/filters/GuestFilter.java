@@ -13,12 +13,8 @@ import jakarta.servlet.ServletResponse;;
 import jakarta.servlet.http.HttpServletResponse;
 // urlPatterns = { "/users/", "/users", "/users/signIn", "/users/signUp", "/users/signIn/", "/users/signUp/"},
 
-@WebFilter(filterName = "GuestFilter", urlPatterns = { "/users/", "/user" })
+@WebFilter(filterName = "GuestFilter", urlPatterns = { "", "/users/", "/user" })
 public class GuestFilter implements Filter {
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        // TODO Auto-generated method stub
-    }
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)

@@ -60,7 +60,9 @@
 [ ] add something (possibly filter) to log user authentications 
 [ ] add default error pages for common error codes
 [ ] figure out bassically the schema.sql file works when you hash passoword in sigup
-
+[ ] ok what if user uploaded two similar images ?
+[ ] handle duplicate images when uploaded.
+[ ] handle when storage.path doesn't exist or is not writable
 
 
 # RESOURCES

@@ -120,75 +120,99 @@
         <body>
             <!-- HTML -->
             <!-- HTML -->
-            <form method="post" action="profile/upload" enctype="multipart/form-data">
-                <div class="profile">
-                    <img src="avatar.png" alt="Avatar" />
-                    <p>It's Me</p>
-                    <p>java@senior.lol</p>
-                </div>
-                <div>
-                </div>
+            <!-- getting user -->
+            <% User user=(User) session.getAttribute("user"); %>
+                <!-- HTML -->
+                <!-- HTML -->
 
-                <div class="upload">
-                    <label for="file" class="btn">Upload</label>
-                    <input type="file" name="file" id="file" class="file" onchange="this.form.submit()"
-                        accept="image/png, image/jpeg, image/jpg" />
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Time</th>
-                                <th>IP</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>December 10, 2020</td>
-                                <td>05:00</td>
-                                <td>127.0.1</td>
-                            </tr>
-                            <tr>
-                                <td>December 09, 2020</td>
-                                <td>04:00</td>
-                                <td>127.0.1</td>
-                            </tr>
-                            <tr>
-                                <td>December 08, 2020</td>
-                                <td>03:00</td>
-                                <td>127.0.1</td>
-                            </tr>
-                            <tr>
-                                <td>December 05, 2020</td>
-                                <td>02:00</td>
-                                <td>127.0.1</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="files">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>File name</th>
-                                <th>Size</th>
-                                <th>MIME</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>image.jpg</td>
-                                <td>196KB</td>
-                                <td>image/jpg</td>
-                            </tr>
-                            <tr>
-                                <td>image.png</td>
-                                <td>1MB</td>
-                                <td>image/png</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </form>
+                <form method="post" action="images" enctype="multipart/form-data">
+                    <div class="profile">
+                        <img src="avatar.png" alt="Avatar" />
+                        <p>It's Me</p>
+                        <p>
+                            <%=user.getEmail()%>
+                        </p>
+                    </div>
+                    <div>
+                    </div>
+
+                    <div class="upload">
+                        <label for="file" class="btn">Upload</label>
+                        <input type="file" name="file" id="file" class="file" onchange="this.form.submit()"
+                            accept="image/png, image/jpeg, image/jpg" />
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>IP</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>December 10, 2020</td>
+                                    <td>05:00</td>
+                                    <td>127.0.1</td>
+                                </tr>
+                                <tr>
+                                    <td>December 09, 2020</td>
+                                    <td>04:00</td>
+                                    <td>127.0.1</td>
+                                </tr>
+                                <tr>
+                                    <td>December 08, 2020</td>
+                                    <td>03:00</td>
+                                    <td>127.0.1</td>
+                                </tr>
+                                <tr>
+                                    <td>December 05, 2020</td>
+                                    <td>02:00</td>
+                                    <td>127.0.1</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="files">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>File name</th>
+                                    <th>Size</th>
+                                    <!-- <th>MIME</th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- 
+                                    list in from     private Map<String, String> fileMapping; in user 
+                                 -->
+                                <% for (Map.Entry<String, String> entry : user.getFileMapping().entrySet()) { %>
+                                    <tr>
+                                        <td>
+                                            <%=entry.getKey()%>
+                                        </td>
+                                        <td>
+                                            <%=entry.getValue()%>
+                                        </td>
+                                        <!-- <td>
+                                            <%=entry.getValue()%>
+                                        </td> -->
+                                    </tr>
+                                    <% } %>
+
+                                        <!-- <tr>
+                                    <td>image.jpg</td>
+                                    <td>196KB</td>
+                                    <td>image/jpg</td>
+                                </tr>
+                                <tr>
+                                    <td>image.png</td>
+                                    <td>1MB</td>
+                                    <td>image/png</td>
+                                </tr> -->
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
 
 
         </body>

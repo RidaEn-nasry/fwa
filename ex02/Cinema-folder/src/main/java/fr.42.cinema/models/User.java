@@ -1,7 +1,7 @@
 package fr.fortytwo.cinema.models;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Map;
 
 public class User implements Serializable {
     private Long id;
@@ -11,7 +11,7 @@ public class User implements Serializable {
     private String password;
     private String email;
 
-    private List<String> imagesUrls;
+    private Map<String, String> fileMapping;
 
     public User() {
 
@@ -82,12 +82,12 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public List<String> getImagesUrls() {
-        return this.imagesUrls;
+    public Map<String, String> getFileMapping() {
+        return this.fileMapping;
     }
 
-    public void setImagesUrls(List<String> imagesUrls) {
-        this.imagesUrls = imagesUrls;
+    public void setFileMapping(Map<String, String> fileMapping) {
+        this.fileMapping = fileMapping;
     }
 
     @Override
@@ -98,6 +98,7 @@ public class User implements Serializable {
                 ", email=" + email +
                 ", phoneNumber=" + phoneNumber +
                 ", password=" + password +
+                ", fileMapping=" + fileMapping +
                 '}';
     }
 
