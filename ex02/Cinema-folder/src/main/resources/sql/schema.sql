@@ -22,5 +22,7 @@ CREATE TABLE IF NOT EXISTS file_mapping (
     PRIMARY KEY (original_file_name, generated_file_name),
     user_id INTEGER NOT NULL,
     path VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
+
 );

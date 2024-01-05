@@ -34,8 +34,9 @@ public class FileMappingRepositoryImpl implements FileMappingRepository {
             fileMapping.setOriginalFileName(rs.getString("original_file_name"));
             fileMapping.setGeneratedFileName(rs.getString("generated_file_name"));
             fileMapping.setMimeType(rs.getString("mime_type"));
-            fileMapping.setSize(rs.getInt("size"));
+            fileMapping.setSize(rs.getLong("size"));
             fileMapping.setPath(rs.getString("path"));
+            fileMapping.setUserId(rs.getLong("user_id"));
             return fileMapping;
 
         }
@@ -43,7 +44,9 @@ public class FileMappingRepositoryImpl implements FileMappingRepository {
 
     @Override
     public List<FileMapping> findAll() {
-        String sql = "SELECT * FROM file_mapping";
+        // elements are sorted by created_at DESC , so the first element is the last
+        // added
+        String sql = "SELECT * FROM file_mapping ORDER BY creadted_at DESC";
         return jdbcTemplate.query(sql, new FileMappingRowMapper());
     }
 
@@ -56,25 +59,30 @@ public class FileMappingRepositoryImpl implements FileMappingRepository {
 
     @Override
     public FileMapping save(FileMapping entity) {
-        String sql = "INSERT INTO file_mapping (original_file_name, generated_file_name, mime_type, size, path) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO file_mapping (original_file_name, generated_file_name, mime_type, size, path, user_id) VALUES (?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql, entity.getOriginalFileName(), entity.getGeneratedFileName(), entity.getMimeType(),
-                entity.getSize(), entity.getPath());
+                entity.getSize(), entity.getPath(), entity.getUserId());
         return entity;
     }
 
     @Override
     public FileMapping update(FileMapping entity) {
-        String sql = "UPDATE file_mapping SET original_file_name = ?, generated_file_name = ?, mime_type = ?, size = ?, path = ? WHERE original_file_name = ? AND generated_file_name = ?";
+        String sql = "UPDATE file_mapping SET original_file_name = ?, generated_file_name = ?, mime_type = ?, size = ?, path = ?, user_id = ? WHERE original_file_name = ? AND generated_file_name = ?";
         jdbcTemplate.update(sql, entity.getOriginalFileName(), entity.getGeneratedFileName(), entity.getMimeType(),
-                entity.getSize(), entity.getPath(), entity.getOriginalFileName(), entity.getGeneratedFileName());
+                entity.getSize(), entity.getPath(), entity.getUserId(), entity.getOriginalFileName(),
+                entity.getGeneratedFileName());
         return entity;
 
     }
 
     @Override
     public void delete(Long id) {
-        String sql = "DELETE FROM file_mapping WHERE original_file_name = ? AND generated_file_name = ?";
-        jdbcTemplate.update(sql, id);
+        // we have no id in the file_mapping table
+        // primary key is (original_file_name, generated_file_name)
+
+        // String sql = "DELETE FROM file_mapping WHERE original_file_name = ? AND
+        // generated_file_name = ?";
+        // jdbcTemplate.update(sql, id);
 
     }
 
@@ -87,9 +95,15 @@ public class FileMappingRepositoryImpl implements FileMappingRepository {
 
     @Override
     public List<FileMapping> findByUserId(Long userId) {
-        String sql = "SELECT * FROM file_mapping WHERE user_id = ?";
+        String sql = "SELECT * FROM file_mapping WHERE user_id = ? ORDER BY created_at DESC";
         List<FileMapping> fileMapping = this.jdbcTemplate.query(sql, new FileMappingRowMapper(), userId);
         return fileMapping;
+    }
+
+    @Override
+    public void deleteByOriginalFileNameAndGeneratedFileName(String originalFileName, String generatedFileName) {
+        String sql = "DELETE FROM file_mapping WHERE original_file_name = ? AND generated_file_name = ?";
+        jdbcTemplate.update(sql, originalFileName, generatedFileName);
     }
 
 }

@@ -10,6 +10,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 import jakarta.servlet.GenericServlet;
 import java.io.File;
 import java.nio.file.Files;
@@ -28,14 +29,33 @@ public class StaticFilesServlet extends HttpServlet {
     private String StoragePath;
     private UsersService usersService;
 
+    private void validateStoragePath(String storagePath) throws ServletException {
+        File file = new File(storagePath);
+        if (!file.exists()) {
+            throw new ServletException("storage.path does not exist");
+        }
+        if (!file.isDirectory()) {
+            throw new ServletException("storage.path is not a directory");
+        }
+        if (!file.canWrite()) {
+            throw new ServletException("storage.path is not writable");
+        }
+        // if doesn't end with / , add it
+        if (!storagePath.endsWith("/")) {
+            storagePath += "/";
+        }
+    }
+
     @Override
     public void init(ServletConfig config) throws ServletException {
         ServletContext context = config.getServletContext();
         ApplicationContext springContext = (ApplicationContext) context.getAttribute("springContext");
-        assert springContext != null;
+
         StoragePath = springContext.getEnvironment().getProperty("storage.path");
+        validateStoragePath(StoragePath);
         usersService = springContext.getBean(UsersService.class);
         super.init(config);
+        assert springContext != null;
     }
 
     @Override
@@ -46,11 +66,14 @@ public class StaticFilesServlet extends HttpServlet {
             return;
         }
         User user = (User) req.getSession().getAttribute("user");
+        System.out.println("user id: " + user.getId());
 
         usersService.updateProfilePicture(req.getPart("file"), user.getId(), StoragePath);
-        resp.setStatus(HttpServletResponse.SC_CREATED);
-        // resp.set
 
+        resp.setStatus(HttpServletResponse.SC_CREATED);
+        // redirect to page which come in the request
+        resp.sendRedirect(req.getHeader("referer"));
+        // resp.set
     }
 
     @Override
@@ -60,18 +83,19 @@ public class StaticFilesServlet extends HttpServlet {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
+        // if
 
-        FileMapping fileMapping = usersService.getProfilePictureByName(fileName);
-        if (fileMapping == null) {
-            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
-            return;
+        // if fileName starts with / , remove it
+        if (fileName.startsWith("/")) {
+            fileName = fileName.substring(1);
         }
-        String filePath = StoragePath + fileMapping.getGeneratedFileName();
+
+        String filePath = StoragePath + fileName;
+        System.out.println("filePath: " + filePath);
         File file = new File(filePath);
         if (file.exists()) {
-            resp.setContentType(fileMapping.getMimeType());
-            resp.setContentLength(fileMapping.getSize().intValue());
-            resp.setHeader("Content-Disposition", "inline; filename=\"" + fileMapping.getOriginalFileName() + "\"");
+            resp.setContentType(getServletContext().getMimeType(filePath));
+            resp.setContentLength((int) file.length());
             Files.copy(Paths.get(filePath), resp.getOutputStream());
         } else {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND);

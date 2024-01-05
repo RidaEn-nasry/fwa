@@ -8,6 +8,8 @@ public interface FileMappingRepository extends CrudRepository<FileMapping> {
 
     public FileMapping findByOriginalFileName(String originalFileName);
 
-    public List<FileMapping> findByUserId(Long userId); 
+    public List<FileMapping> findByUserId(Long userId);
+
+    public void deleteByOriginalFileNameAndGeneratedFileName(String originalFileName, String generatedFileName);
 
 }

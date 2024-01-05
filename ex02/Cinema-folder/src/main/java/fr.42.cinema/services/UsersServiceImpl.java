@@ -51,6 +51,10 @@ public class UsersServiceImpl implements UsersService {
         return user;
     }
 
+    private void writeFileToDisk(Part filePart, String storagePath, String fileName) throws IOException {
+        filePart.write(storagePath + fileName);
+    }
+
     @Override
     public FileMapping updateProfilePicture(Part filePart, Long userId, String storagePath)
             throws IOException, ServletException {
@@ -62,14 +66,16 @@ public class UsersServiceImpl implements UsersService {
                 + ext;
         fileMapping.setGeneratedFileName(hashedFileName);
         fileMapping.setMimeType(filePart.getContentType());
-        fileMapping.setSize((int) filePart.getSize());
+        fileMapping.setSize(filePart.getSize());
         fileMapping.setPath(storagePath);
+        fileMapping.setUserId(userId);
+        writeFileToDisk(filePart, storagePath, hashedFileName);
         fileMappingRepository.save(fileMapping);
         return fileMapping;
     }
 
     @Override
-    
+
     public List<FileMapping> getProfilePictures(Long userId) {
         return UsersRepository.findByUserId(userId);
     }

@@ -48,8 +48,9 @@ public class UsersRspositoryImpl implements UsersRepository {
             fileMapping.setOriginalFileName(rs.getString("original_file_name"));
             fileMapping.setGeneratedFileName(rs.getString("generated_file_name"));
             fileMapping.setMimeType(rs.getString("mime_type"));
-            fileMapping.setSize(rs.getInt("size"));
+            fileMapping.setSize(rs.getLong("size"));
             fileMapping.setPath(rs.getString("path"));
+            fileMapping.setUserId(rs.getLong("user_id"));
             return fileMapping;
 
         }
@@ -58,6 +59,7 @@ public class UsersRspositoryImpl implements UsersRepository {
     public List<FileMapping> findByUserId(Long userId) {
         String sql = "SELECT * FROM file_mapping WHERE user_id = ?";
         List<FileMapping> fileMapping = this.jdbcTemplate.query(sql, new FileMappingRowMapper(), userId);
+        System.out.println("We got " + fileMapping.size() + " fileMapping(s) for user " + userId);
         return fileMapping;
     }
 
@@ -72,6 +74,7 @@ public class UsersRspositoryImpl implements UsersRepository {
             user.setPassword(rs.getString("user_password"));
             user.setPhoneNumber(rs.getString("phone_number"));
             user.setEmail(rs.getString("email"));
+            System.out.println("user id: " + user.getId());
             user.setFileMapping(findByUserId(user.getId()));
             return user;
         }
@@ -157,19 +160,6 @@ public class UsersRspositoryImpl implements UsersRepository {
         String sql = "SELECT * FROM users WHERE phone_number = ?";
         User user = (User) this.jdbcTemplate.queryForObject(sql, new UserRowMapper(), phoneNumber);
         return user;
-    }
-
-    @Override
-    public String updateProfileImg(String originalFileName, String generatedFileName, Long userId) {
-        String sql = "INSERT INTO file_mapping (original_file_name, generated_file_name, user_id) VALUES (?, ?, ?)";
-        this.jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, originalFileName);
-            ps.setString(2, generatedFileName);
-            ps.setLong(3, userId);
-            return ps;
-        });
-        return generatedFileName;
     }
 
 }
