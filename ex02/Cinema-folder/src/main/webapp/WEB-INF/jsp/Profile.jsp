@@ -126,17 +126,32 @@
                             text-overflow: ellipsis;
                             white-space: nowrap;
                         }
+
+                        /* logout button to the top right of the page  ---*/
+                        form button {
+                            position: absolute;
+                            top: 10px;
+                            right: 10px;
+                            background-color: #555;
+                            border: none;
+                            color: white;
+                            border-radius: 5px;
+                            cursor: pointer;
+                            padding: 10px 20px;
+                        }
+
+                        form button:hover {
+                            background-color: #333;
+                        }
                     </style>
 
                     <body>
-                        <!-- HTML -->
                         <!-- getting user / fileMappings from session / request -->
                         <% User user=(User) session.getAttribute("user"); %>
                             <% List < FileMapping> fileMappings = (List < FileMapping> )
                                     request.getAttribute("profilePictures"); %>
                                     <form method="post" action="images" enctype="multipart/form-data">
                                         <div class="profile">
-                                            <!-- getting the most recent fileMapping from fileMappings -->
                                             <% if(fileMappings!=null && !fileMappings.isEmpty()){ %>
                                                 <!-- last elem is last added -->
                                                 <img src="http://localhost:8080/Cinema/images/<%=fileMappings.get(fileMappings.size()-1).getGeneratedFileName()%>"
@@ -239,20 +254,13 @@
                                                 <% } %>
                                         </div>
                                     </form>
+                                    <!-- logout button to the top right of the page  --->
+                                    <form method="post" action="logout">
+                                        <button type="submit">Logout</button>
+                                    </form>
+
+
 
                     </body>
 
                     </html>
-
-
-
-                    <!-- <tr>
-                                                <td>image.jpg</td>
-                                                <td>196KB</td>
-                                                <td>image/jpg</td>
-                                            </tr>
-                                            <tr>
-                                                <td>image.png</td>
-                                                <td>1MB</td>
-                                                <td>image/png</td>
-                                            </tr> -->

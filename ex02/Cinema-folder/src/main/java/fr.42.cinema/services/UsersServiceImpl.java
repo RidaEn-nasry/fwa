@@ -7,11 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import fr.fortytwo.cinema.repositories.AuthLogsRepository;
 import fr.fortytwo.cinema.repositories.FileMappingRepository;
 import fr.fortytwo.cinema.repositories.UsersRepository;
 import fr.fortytwo.cinema.services.UsersService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.Part;
+import fr.fortytwo.cinema.models.AuthLogs;
 import fr.fortytwo.cinema.models.FileMapping;
 import fr.fortytwo.cinema.models.User;
 import jakarta.servlet.ServletException;
@@ -24,6 +26,9 @@ public class UsersServiceImpl implements UsersService {
 
     @Autowired
     private FileMappingRepository fileMappingRepository;
+
+    @Autowired
+    private AuthLogsRepository authLogsRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -49,6 +54,7 @@ public class UsersServiceImpl implements UsersService {
             throw new RuntimeException("Wrong password");
         }
         return user;
+
     }
 
     private void writeFileToDisk(Part filePart, String storagePath, String fileName) throws IOException {
@@ -83,6 +89,23 @@ public class UsersServiceImpl implements UsersService {
     @Override
     public FileMapping getProfilePictureByName(String originalFileName) {
         return fileMappingRepository.findByOriginalFileName(originalFileName);
+    }
+
+    @Override
+    public AuthLogs addAuthLog(AuthLogs authLog) {
+        System.out.println("We're trying to add auth log: " + authLog);
+
+        return authLogsRepository.save(authLog);
+    }
+
+    @Override
+    public List<AuthLogs> getAuthLogs(Long userId) {
+        return authLogsRepository.findByUserId(userId);
+    }
+
+    @Override
+    public void updateUsersTimeSpent(Long userId, Integer timeSpent) {
+        authLogsRepository.updateTimeSpent(userId, timeSpent);
     }
 
 }

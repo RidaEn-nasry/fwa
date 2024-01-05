@@ -45,6 +45,7 @@ public class UsersServlet extends HttpServlet {
         try {
             User user = usersService.signIn(phoneNumber, password);
             req.getSession().setAttribute("user", user);
+            req.getSession().setAttribute("httpRequest", req);
             resp.sendRedirect("/Cinema/profile");
         } catch (Exception e) {
             System.err.println("Err: " + e.getMessage());
@@ -71,6 +72,7 @@ public class UsersServlet extends HttpServlet {
         try {
             User user = usersService.signUp(first_name, last_name, user_password, phone_number, email);
             req.getSession().setAttribute("user", user);
+            req.getSession().setAttribute("httpRequest", req);
             resp.sendRedirect("/Cinema/profile");
         } catch (Exception e) {
             System.err.println("Err: " + e.getMessage());
@@ -78,7 +80,6 @@ public class UsersServlet extends HttpServlet {
         }
     }
 
-    
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String path = req.getServletPath();
@@ -92,6 +93,10 @@ public class UsersServlet extends HttpServlet {
                 break;
             case "/users/signUp":
                 req.getRequestDispatcher("/WEB-INF/html/Signup.html").forward(req, resp);
+                break;
+            case "/users/logout":
+                req.getSession().invalidate();
+                resp.sendRedirect("/Cinema/users/signIn");
                 break;
             case "/users":
                 req.getRequestDispatcher("/WEB-INF/html/Landing.html").forward(req, resp);

@@ -26,3 +26,13 @@ CREATE TABLE IF NOT EXISTS file_mapping (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
 
 );
+
+
+CREATE TABLE IF NOT EXISTS auth_logs (
+    ip_address VARCHAR(255) NOT NULL,
+    attempted_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    time_spent INTEGER DEFAULT 0,
+    user_id INTEGER NOT NULL,
+    PRIMARY KEY (ip_address, attempted_at, user_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
