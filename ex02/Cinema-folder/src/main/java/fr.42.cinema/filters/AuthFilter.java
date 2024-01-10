@@ -12,11 +12,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.FilterConfig;
 
-// rida.ennasry@gmail.com
-//root@root1234
 @WebFilter(urlPatterns = { "/profile/*", "/images/*" }, filterName = "AuthFilter")
 public class AuthFilter implements Filter {
-
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
             throws IOException, ServletException {
@@ -26,7 +23,7 @@ public class AuthFilter implements Filter {
         if (request.getSession().getAttribute("user") != null) {
             chain.doFilter(req, res);
         } else {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
         }
     }
 }

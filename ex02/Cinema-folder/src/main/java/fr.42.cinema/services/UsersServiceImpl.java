@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import java.sql.Timestamp;
 import fr.fortytwo.cinema.repositories.AuthLogsRepository;
 import fr.fortytwo.cinema.repositories.FileMappingRepository;
 import fr.fortytwo.cinema.repositories.UsersRepository;
@@ -93,8 +93,6 @@ public class UsersServiceImpl implements UsersService {
 
     @Override
     public AuthLogs addAuthLog(AuthLogs authLog) {
-        System.out.println("We're trying to add auth log: " + authLog);
-
         return authLogsRepository.save(authLog);
     }
 
@@ -104,8 +102,8 @@ public class UsersServiceImpl implements UsersService {
     }
 
     @Override
-    public void updateUsersTimeSpent(Long userId, Integer timeSpent) {
-        authLogsRepository.updateTimeSpent(userId, timeSpent);
+    public void updateUsersTimeSpent(Long userId, Timestamp attemptedAt, String ipAddress, Integer timeSpent) {
+        authLogsRepository.updateTimeSpent(userId, attemptedAt, ipAddress, timeSpent);
     }
 
 }

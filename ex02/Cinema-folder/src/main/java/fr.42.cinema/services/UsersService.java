@@ -4,6 +4,7 @@ import fr.fortytwo.cinema.models.FileMapping;
 import fr.fortytwo.cinema.models.User;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.List;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Part;
@@ -36,5 +37,5 @@ public interface UsersService {
 
     // add time spent to auth log
 
-    public void updateUsersTimeSpent(Long userId, Integer timeSpent);
+    public void updateUsersTimeSpent(Long userId, Timestamp attemptedAt, String IpAddress, Integer timeSpent);
 }

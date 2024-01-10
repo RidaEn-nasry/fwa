@@ -59,7 +59,6 @@ public class UsersRspositoryImpl implements UsersRepository {
     public List<FileMapping> findByUserId(Long userId) {
         String sql = "SELECT * FROM file_mapping WHERE user_id = ?";
         List<FileMapping> fileMapping = this.jdbcTemplate.query(sql, new FileMappingRowMapper(), userId);
-        System.out.println("We got " + fileMapping.size() + " fileMapping(s) for user " + userId);
         return fileMapping;
     }
 
@@ -74,7 +73,6 @@ public class UsersRspositoryImpl implements UsersRepository {
             user.setPassword(rs.getString("user_password"));
             user.setPhoneNumber(rs.getString("phone_number"));
             user.setEmail(rs.getString("email"));
-            System.out.println("user id: " + user.getId());
             user.setFileMapping(findByUserId(user.getId()));
             return user;
         }

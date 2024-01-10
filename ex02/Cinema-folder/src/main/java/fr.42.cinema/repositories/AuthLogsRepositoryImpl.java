@@ -13,6 +13,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
 
 @Repository("AuthLogsRepository")
 public class AuthLogsRepositoryImpl implements AuthLogsRepository {
@@ -30,8 +32,8 @@ public class AuthLogsRepositoryImpl implements AuthLogsRepository {
         @Override
         public AuthLogs mapRow(ResultSet rs, int rowNum) throws SQLException {
             AuthLogs authLogs = new AuthLogs();
-            authLogs.setIpAdress(rs.getString("ip_adress"));
-            authLogs.setAttemptedAt(rs.getString("attempted_at"));
+            authLogs.setIpAddress(rs.getString("ip_address"));
+            authLogs.setAttemptedAt(rs.getTimestamp("attempted_at"));
             authLogs.setTimeSpent(rs.getInt("time_spent"));
             authLogs.setUserId(rs.getLong("user_id"));
             return authLogs;
@@ -60,23 +62,16 @@ public class AuthLogsRepositoryImpl implements AuthLogsRepository {
 
     @Override
     public AuthLogs save(AuthLogs entity) {
-        String sql = "INSERT INTO auth_logs (ip_adress, user_id) VALUES (?, ?)";
-        int rows = jdbcTemplate.update(sql, entity.getIpAdress(), entity.getUserId());
-        if (rows != 1) {
-           System.out.println("Error while inserting auth log");
-       } else {
-           System.out.println("Auth log inserted successfully");
-       }
-        
-
+        String sql = "INSERT INTO auth_logs (ip_address, user_id, attempted_at) VALUES (?, ?, ?)";
+        int rows = jdbcTemplate.update(sql, entity.getIpAddress(), entity.getUserId(), entity.getAttemptedAt());
         return entity;
     }
 
     @Override
     public AuthLogs update(AuthLogs entity) {
-        String sql = "UPDATE auth_logs SET ip_adress = ?, attempted_at = ?, time_spent = ?, user_id = ? WHERE (ip_adress = ? AND attempted_at = ? AND time_spent = ? AND user_id = ?)";
-        jdbcTemplate.update(sql, entity.getIpAdress(), entity.getAttemptedAt(), entity.getTimeSpent(),
-                entity.getUserId(), entity.getIpAdress(), entity.getAttemptedAt(), entity.getTimeSpent(),
+        String sql = "UPDATE auth_logs SET ip_ = ?, attempted_at = ?, time_spent = ?, user_id = ? WHERE (ip_ = ? AND attempted_at = ? AND time_spent = ? AND user_id = ?)";
+        jdbcTemplate.update(sql, entity.getIpAddress(), entity.getAttemptedAt(), entity.getTimeSpent(),
+                entity.getUserId(), entity.getIpAddress(), entity.getAttemptedAt(), entity.getTimeSpent(),
                 entity.getUserId());
         return entity;
     }
@@ -87,9 +82,9 @@ public class AuthLogsRepositoryImpl implements AuthLogsRepository {
     }
 
     @Override
-    public void updateTimeSpent(Long userId, Integer timeSpent) {
-        String sql = "UPDATE auth_logs SET time_spent = ? WHERE user_id = ?";
-        jdbcTemplate.update(sql, timeSpent, userId);
+    public void updateTimeSpent(Long userId, Timestamp attemptedAt, String ipAddress, Integer timeSpent) {
+        String sql = "UPDATE auth_logs SET time_spent = ? WHERE (user_id = ? AND attempted_at = ? AND ip_address = ?)";
+        int rows = jdbcTemplate.update(sql, timeSpent, userId, attemptedAt, ipAddress);
     }
 
 }

@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import fr.fortytwo.cinema.models.AuthLogs;
 import fr.fortytwo.cinema.models.FileMapping;
 import fr.fortytwo.cinema.models.User;
 
@@ -38,10 +39,15 @@ public class ProfileServlet extends HttpServlet {
         List<FileMapping> profilePictures = usersService
                 .getProfilePictures(userId);
 
+        List<AuthLogs> authLogs = usersService.getAuthLogs(userId);
+        System.out.println("We have " + authLogs.size() + " auth logs");
         // profile pictures have a life cycle of a request, each request = new list (for
         // that user might have added a new picture)
         req.setAttribute("profilePictures", profilePictures);
 
         req.getRequestDispatcher("/WEB-INF/jsp/Profile.jsp").forward(req, resp);
+
+        // auth logs have a session life cycle,
+        req.getSession().setAttribute("authLogs", authLogs);
     }
 }

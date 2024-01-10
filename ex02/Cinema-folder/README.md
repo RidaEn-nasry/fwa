@@ -5,12 +5,12 @@
 
 ## Instructions to setup/run the Servlet container / maven
 
-1. install tomcat 7 if not installed
+1. install tomcat 10 if not installed
 
 2. Setup necessary roles:
    2.1. add admin role to manager gui / manager script to allow plugin based deployment
  ```bash
-    $ cd {tomcat  dir}/conf
+    $ cd {tomcat dir}/conf
     $ vim tomcat-users.xml
  ```
    2.2. add the following lines to the file
@@ -53,28 +53,9 @@
 4. Enjoy!   
 
 
-<!--  to remove -->
-
-# TODO
-[ ] check for 403 in client from authFilter
-[ ] add something (possibly filter) to log user authentications 
-[ ] add default error pages for common error codes
-[ ] figure out bassically the schema.sql file works when you hash passoword in sigup
-[ ] ok what if user uploaded two similar images ?
-[ ] handle duplicate images when uploaded.
-[ ] handle when storage.path doesn't exist or is not writable
-
-
 # RESOURCES
 
 [applets, servlets and JSP.](https://www.utc.fr/~dnace/dokuwiki/_media/fr/servletesjsp_translated.pdf)
 
 
-
-
-
-<!-- ********************************************* -->
-
-<!-- WE LEFT WITH THIS ERROR WHEN UPLOADING IMAGE TO PROFILE  -->
-<!-- Message PreparedStatementCallback; SQL [INSERT INTO file_mapping (original_file_name, generated_file_name, mime_type, size, path) VALUES (?, ?, ?, ?, ?)]; ERROR: null value in column "user_id" of relation "file_mapping" violates not-null constraint -->
 

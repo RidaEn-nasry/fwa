@@ -1,17 +1,18 @@
 
 package fr.fortytwo.cinema.models;
 
+import java.sql.Timestamp;
 import java.util.Objects;
 
 public class AuthLogs {
 
-    private String ipAdress;
-    private String attemptedAt;
+    private String ipAddress;
+   private Timestamp attemptedAt; 
     private Integer timeSpent;
     private Long userId;
 
-    public AuthLogs(String ipAdress, String attemptedAt, Integer timeSpent, Long userId) {
-        this.ipAdress = ipAdress;
+    public AuthLogs(String ipAddress, Timestamp attemptedAt, Integer timeSpent, Long userId) {
+        this.ipAddress = ipAddress;
         this.attemptedAt = attemptedAt;
         this.timeSpent = timeSpent;
         this.userId = userId;
@@ -20,19 +21,20 @@ public class AuthLogs {
     public AuthLogs() {
     }
 
-    public String getIpAdress() {
-        return this.ipAdress;
+    public String getIpAddress() {
+        return this.ipAddress;
     }
 
-    public void setIpAdress(String ipAdress) {
-        this.ipAdress = ipAdress;
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
     }
 
-    public String getAttemptedAt() {
+    public Timestamp getAttemptedAt() {
         return this.attemptedAt;
     }
 
-    public void setAttemptedAt(String attemptedAt) {
+    
+    public void setAttemptedAt(Timestamp attemptedAt) {
         this.attemptedAt = attemptedAt;
     }
 
@@ -55,7 +57,7 @@ public class AuthLogs {
     @Override
     public String toString() {
         return "{" +
-                " ipAdress='" + getIpAdress() + "'" +
+                " ipAddress='" + getIpAddress() + "'" +
                 ", attemptedAt='" + getAttemptedAt() + "'" +
                 ", timeSpent='" + getTimeSpent() + "'" +
                 ", userId='" + getUserId() + "'" +
@@ -70,14 +72,14 @@ public class AuthLogs {
             return false;
         }
         AuthLogs authLogs = (AuthLogs) o;
-        return Objects.equals(ipAdress, authLogs.ipAdress) && Objects.equals(attemptedAt, authLogs.attemptedAt)
+        return Objects.equals(ipAddress, authLogs.ipAddress) && Objects.equals(attemptedAt, authLogs.attemptedAt)
                 && Objects.equals(timeSpent, authLogs.timeSpent) && Objects.equals(userId, authLogs.userId);
     }
 
     @Override
 
     public int hashCode() {
-        return Objects.hash(ipAdress, attemptedAt, timeSpent, userId);
+        return Objects.hash(ipAddress, attemptedAt, timeSpent, userId);
     }
 
 }

@@ -8,18 +8,20 @@ import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.annotation.WebServlet;
 import fr.fortytwo.cinema.services.UsersService;
+import fr.fortytwo.cinema.models.AuthLogs;
 import fr.fortytwo.cinema.models.User;
 
 // ---------
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Timestamp;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @WebServlet(name = "UsersServlet", urlPatterns = { "/users/", "/users", "/users/signIn", "/users/signUp",
-        "/users/signIn/", "/users/signUp/" })
+        "/users/signIn/", "/users/signUp/", "/users/logOut", "/users/logOut/" })
 
 public class UsersServlet extends HttpServlet {
     private UsersService usersService;
@@ -32,10 +34,28 @@ public class UsersServlet extends HttpServlet {
         assert usersService != null;
     }
 
+    // log auth
+    private void logAuth(HttpServletRequest req) {
+        AuthLogs authLog = new AuthLogs();
+        Long userId = ((User) req.getSession().getAttribute("user")).getId();
+        String ipAddress = req.getRemoteAddr();
+        // they're using ipv6
+
+        if (ipAddress.equalsIgnoreCase("0:0:0:0:0:0:0:1")) {
+            ipAddress = "127.0.0.1";
+        }
+
+        Timestamp attemptedAt = new Timestamp(System.currentTimeMillis());
+        authLog.setUserId(userId);
+        authLog.setIpAddress(ipAddress);
+        authLog.setAttemptedAt(attemptedAt);
+        usersService.addAuthLog(authLog);
+        req.getSession().setAttribute("authLog", authLog);
+    }
+
     // handle sign in
     private void signIn(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         JSONObject jsonRequest = (JSONObject) req.getAttribute("jsonRequest");
-        // getting the body of the request
         String phoneNumber = jsonRequest.getString("email");
         String password = jsonRequest.getString("password");
         if (phoneNumber == null || password == null) {
@@ -45,7 +65,8 @@ public class UsersServlet extends HttpServlet {
         try {
             User user = usersService.signIn(phoneNumber, password);
             req.getSession().setAttribute("user", user);
-            req.getSession().setAttribute("httpRequest", req);
+            // req.getSession().setAttribute("httpRequest", req);
+            logAuth(req);
             resp.sendRedirect("/Cinema/profile");
         } catch (Exception e) {
             System.err.println("Err: " + e.getMessage());
@@ -64,7 +85,6 @@ public class UsersServlet extends HttpServlet {
         String phone_number = jsonRequest.getString("phone_number");
         String email = jsonRequest.getString("email");
 
-        System.out.println("email: " + email);
         if (first_name == null || last_name == null || user_password == null || phone_number == null || email == null) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
@@ -72,7 +92,7 @@ public class UsersServlet extends HttpServlet {
         try {
             User user = usersService.signUp(first_name, last_name, user_password, phone_number, email);
             req.getSession().setAttribute("user", user);
-            req.getSession().setAttribute("httpRequest", req);
+            logAuth(req);
             resp.sendRedirect("/Cinema/profile");
         } catch (Exception e) {
             System.err.println("Err: " + e.getMessage());
@@ -94,10 +114,6 @@ public class UsersServlet extends HttpServlet {
             case "/users/signUp":
                 req.getRequestDispatcher("/WEB-INF/html/Signup.html").forward(req, resp);
                 break;
-            case "/users/logout":
-                req.getSession().invalidate();
-                resp.sendRedirect("/Cinema/users/signIn");
-                break;
             case "/users":
                 req.getRequestDispatcher("/WEB-INF/html/Landing.html").forward(req, resp);
                 break;
@@ -116,6 +132,10 @@ public class UsersServlet extends HttpServlet {
                 break;
             case "/users/signUp":
                 signUp(req, res);
+                break;
+            case "/users/logOut":
+                req.getSession().invalidate();
+                res.sendRedirect("/Cinema/users");
                 break;
             default:
                 res.setStatus(HttpServletResponse.SC_NOT_FOUND);

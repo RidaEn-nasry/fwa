@@ -66,8 +66,6 @@ public class StaticFilesServlet extends HttpServlet {
             return;
         }
         User user = (User) req.getSession().getAttribute("user");
-        System.out.println("user id: " + user.getId());
-
         usersService.updateProfilePicture(req.getPart("file"), user.getId(), StoragePath);
 
         resp.setStatus(HttpServletResponse.SC_CREATED);
@@ -91,7 +89,6 @@ public class StaticFilesServlet extends HttpServlet {
         }
 
         String filePath = StoragePath + fileName;
-        System.out.println("filePath: " + filePath);
         File file = new File(filePath);
         if (file.exists()) {
             resp.setContentType(getServletContext().getMimeType(filePath));

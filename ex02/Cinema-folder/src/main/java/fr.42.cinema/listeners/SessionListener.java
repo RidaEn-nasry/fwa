@@ -1,5 +1,7 @@
 package fr.fortytwo.cinema.listeners;
 
+import java.sql.Timestamp;
+
 import org.springframework.context.ApplicationContext;
 
 import fr.fortytwo.cinema.models.AuthLogs;
@@ -28,34 +30,22 @@ public class SessionListener implements HttpSessionListener {
 
     @Override
     public void sessionCreated(HttpSessionEvent se) {
-        setUsersService(se);
-        ServletContext context = se.getSession().getServletContext();
-        HttpServletRequest request = (HttpServletRequest) context.getAttribute("httpRequest");
-        System.out.println("Request is: " + request );
-        User user = (User)request.getSession().getAttribute("user");
-        System.out.println("User is: " + user);
-        // User user = (User) se.getSession().getAttribute("user");
-        AuthLogs authLog = new AuthLogs();
-        authLog.setUserId(user.getId());
-        authLog.setIpAdress(request.getRemoteAddr());
-        
-        System.out.println("Session created");
-        System.out.println("IP: " + request.getRemoteAddr());
-        System.out.println("User: " + user.getId());
-
-        usersService.addAuthLog(authLog);
-
-        // set time created attribute for later use in sessionDestroyed
-        se.getSession().setAttribute("sessionTimeCreated", System.currentTimeMillis());
+        // not really needed
     }
 
     @Override
     public void sessionDestroyed(HttpSessionEvent se) {
-        System.out.println("Session destroyed");
+
+        // The attributes are still accessible because the session is invalidated only
+        // after the current request/response life cycle is completed.
+
         setUsersService(se);
         User user = (User) se.getSession().getAttribute("user");
-        // timecreated - timenow
-        Long timeSpent = System.currentTimeMillis() - (Long) se.getSession().getAttribute("sessionTimeCreated");
-        usersService.updateUsersTimeSpent(user.getId(), timeSpent.intValue());
+        AuthLogs authLog = (AuthLogs) se.getSession().getAttribute("authLog");
+        Long userId = user.getId();
+        Timestamp attemptedAt = authLog.getAttemptedAt();
+        String ipAddress = authLog.getIpAddress();
+        Integer timeSpent = (int) (System.currentTimeMillis() - attemptedAt.getTime()) / 1000;
+        usersService.updateUsersTimeSpent(user.getId(), attemptedAt, ipAddress, timeSpent);
     }
 }
